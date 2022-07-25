@@ -15,12 +15,12 @@ function selectButton(buttonClass){
 
 function hideButton(buttonClass){
   let btn = selectButton(buttonClass);
-  btn.style = "display:none;";
+  btn.style.display = "none";
 }
 
 function showButton(buttonClass){
   let btn = selectButton(buttonClass);
-  btn.style = null;
+  btn.style.display = null;
 }
 
 function toggleButton(checked, btnClass){
@@ -68,7 +68,7 @@ const panelConfig = {
 async function onload({extensionAPI}) {
   // set default setting
   for (let i = 0; i < sidebarBtnClasses.length; i++) {
-    console.log(sidebarBtnClasses[i])
+
     if (!extensionAPI.settings.get(sidebarBtnClasses[i])) {
       await extensionAPI.settings.set(sidebarBtnClasses[i], false);
     } else if (extensionAPI.settings.get(sidebarBtnClasses[i])==true){
