@@ -1,25 +1,17 @@
 /* Original code by matt vogel */
   /* v1  */
-let sidebarBtnClasses = ['bp3-icon-calendar', 'bp3-icon-graph', 'bp3-icon-list', 'bp3-icon-shop']
-
-// select parent button by child icon
-function selectButton(buttonClass){
-  let icon = document.querySelector(".roam-sidebar-content ." + buttonClass);
-  let div = icon.parentNode;
-  // some buttons (daily notes, graph) have a different html structure
-  if (div.className != 'log-button'){
-    div = div.parentNode
-  }
-  return div;
-}
+let sidebarBtnClasses = ['rm-left-sidebar__daily-notes',
+                        'rm-left-sidebar__graph-overview',
+                        'rm-left-sidebar__all-pages',
+                        'rm-left-sidebar__roam-depot']
 
 function hideButton(buttonClass){
-  let btn = selectButton(buttonClass);
+  let btn = document.querySelector(".roam-sidebar-content ." + buttonClass);
   btn.style.display = "none";
 }
 
 function showButton(buttonClass){
-  let btn = selectButton(buttonClass);
+  let btn = document.querySelector(".roam-sidebar-content ." + buttonClass);
   btn.style.display = null;
 }
 
@@ -34,33 +26,33 @@ function toggleButton(checked, btnClass){
 const panelConfig = {
     tabTitle: "Hide Left Sidebar Buttons",
     settings: [
-        {id:         "bp3-icon-calendar",
+        {id:         "rm-left-sidebar__daily-notes",
         name:        "Hide Daily Notes Button",
         description: "Hides or shows the Graph Overview button in the left sidebar",
         action:      {type:     "switch",
                       onChange: (evt) => { 
-                        toggleButton(evt.target.checked, 'bp3-icon-calendar')
+                        toggleButton(evt.target.checked, 'rm-left-sidebar__daily-notes')
                     }}},
-        {id:          "bp3-icon-graph",
+        {id:          "rm-left-sidebar__graph-overview",
          name:        "Hide Graph Button",
          description: "Hides or shows the Graph Overview button in the left sidebar",
          action:      {type:     "switch",
                        onChange: (evt) => { 
-                        toggleButton(evt.target.checked, 'bp3-icon-graph')
+                        toggleButton(evt.target.checked, 'rm-left-sidebar__graph-overview')
                       }}},
-        {id:          "bp3-icon-list",
+        {id:          "rm-left-sidebar__all-pages",
         name:        "Hide All Pages Button",
         description: "Hides or shows the Roam Depot button in the left sidebar",
         action:      {type:     "switch",
                       onChange: (evt) => { 
-                        toggleButton(evt.target.checked, 'bp3-icon-list')
+                        toggleButton(evt.target.checked, 'rm-left-sidebar__all-pages')
                       }}},
-        {id:          "bp3-icon-shop",
+        {id:          "rm-left-sidebar__roam-depot",
         name:        "Hide Roam Depot Button",
         description: "Hides or shows the Roam Depot button in the left sidebar",
         action:      {type:     "switch",
                       onChange: (evt) => { 
-                        toggleButton(evt.target.checked, 'bp3-icon-shop')
+                        toggleButton(evt.target.checked, 'rm-left-sidebar__roam-depot')
                       }}}
     ]
 };
