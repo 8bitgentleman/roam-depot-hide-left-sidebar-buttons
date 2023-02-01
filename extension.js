@@ -4,7 +4,8 @@ let mobile = false;
 let sidebarBtnClasses = ['rm-left-sidebar__daily-notes',
                         'rm-left-sidebar__graph-overview',
                         'rm-left-sidebar__all-pages',
-                        'rm-left-sidebar__roam-depot']
+                        'rm-left-sidebar__roam-depot',
+                        'starred-pages-wrapper .title']
 
 function hideButton(buttonClass){
   let btn = document.querySelector(".roam-sidebar-content ." + buttonClass);
@@ -116,7 +117,15 @@ async function onload({extensionAPI}) {
         action:      {type:     "switch",
                       onChange: (evt) => { 
                         toggleButton(evt.target.checked, 'rm-left-sidebar__roam-depot')
+                      }}},
+        {id:          "rm-left-sidebar__roam-depot",
+        name:        "Hide Shortcuts Title Header",
+        description: "Hides or shows the Shortcuts title header in the left sidebar",
+        action:      {type:     "switch",
+                      onChange: (evt) => { 
+                        toggleButton(evt.target.checked, 'starred-pages-wrapper .title')
                       }}}
+
     ]
   };
 
