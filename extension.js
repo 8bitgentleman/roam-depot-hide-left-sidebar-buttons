@@ -17,13 +17,7 @@ function showButton(buttonClass){
   btn.style.display = null;
 }
 
-function toggleButton(checked, btnClass){
-  if (checked==true){
-    hideButton(btnClass)
-  } else if (checked==false){
-    showButton(btnClass)
-  } 
-}
+
 
 
 
@@ -42,13 +36,35 @@ async function onload({extensionAPI}) {
     } else if (extensionAPI.settings.get(sidebarBtnClasses[i])==true){
       // when starting up check if we should only hide on mobile
       if (extensionAPI.settings.get("mobile")==true) {
+        // hide on mobile is true
         if(mobile==true){
           hideButton(sidebarBtnClasses[i])
         }
       } else{
+        // hide on mobile is false
         hideButton(sidebarBtnClasses[i])
       }
     }
+  }
+  function toggleButton(checked, btnClass){
+    // check is on
+      // only mobile
+        // device is mobile
+          // hide
+      // wherever
+        // hide 
+    if (checked==true){
+      if (extensionAPI.settings.get('mobile')==true) {
+        if (mobile) {
+          hideButton(btnClass)
+        }
+      } else{
+        hideButton(btnClass)
+      }
+      
+    } else if (checked==false){
+      showButton(btnClass)
+    } 
   }
 
   const panelConfig = {
@@ -72,6 +88,7 @@ async function onload({extensionAPI}) {
                       })
                     } else {
                       // we want to only hide on mobile but it's not mobile
+                      // so we show all buttons
                       sidebarBtnClasses.forEach(function(button) {
                         showButton(button)
                       })
