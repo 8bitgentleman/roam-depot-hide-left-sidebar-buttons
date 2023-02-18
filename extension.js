@@ -30,7 +30,7 @@ async function onload({extensionAPI}) {
     // now that I query for a more complex html item
     let classToHide;
     if (sidebarBtnClass=="starred_title") {
-      classToHide=="starred-pages-wrapper .title"
+      classToHide = "starred-pages-wrapper .title"
     } else {
       classToHide = sidebarBtnClass;
     }
@@ -90,7 +90,7 @@ async function onload({extensionAPI}) {
                         // now that I query for a more complex html item
                         let classToHide;
                         if (sidebarBtnClass=="starred_title") {
-                          classToHide=="starred-pages-wrapper .title"
+                          classToHide = "starred-pages-wrapper .title"
                         } else {
                           classToHide = sidebarBtnClass;
                         }
@@ -107,7 +107,7 @@ async function onload({extensionAPI}) {
                         // now that I query for a more complex html item
                         let classToHide;
                         if (sidebarBtnClass=="starred_title") {
-                          classToHide=="starred-pages-wrapper .title"
+                          classToHide = "starred-pages-wrapper .title"
                         } else {
                           classToHide = sidebarBtnClass;
                         }
@@ -123,7 +123,7 @@ async function onload({extensionAPI}) {
                       // now that I query for a more complex html item
                       let classToHide;
                       if (sidebarBtnClass=="starred_title") {
-                        classToHide=="starred-pages-wrapper .title"
+                        classToHide = "starred-pages-wrapper .title"
                       } else {
                         classToHide = sidebarBtnClass;
                       }
@@ -185,11 +185,10 @@ function onunload() {
   sidebarBtnClasses.forEach( sidebarBtnClass => {
     let classToHide;
     if (sidebarBtnClass=="starred_title") {
-      classToHide=="starred-pages-wrapper .title"
+      classToHide = "starred-pages-wrapper .title"
     } else {
       classToHide = sidebarBtnClass;
     }
-    
     showButton(classToHide)
   })
 
