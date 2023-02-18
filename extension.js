@@ -190,9 +190,7 @@ function onunload() {
       classToHide = sidebarBtnClass;
     }
     
-    if (extensionAPI.settings.get(sidebarBtnClass)) {
-      showButton(classToHide)
-    }
+    showButton(classToHide)
   })
 
   console.log("unload hide left sidebar button plugin")
