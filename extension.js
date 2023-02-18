@@ -5,7 +5,7 @@ let sidebarBtnClasses = ['rm-left-sidebar__daily-notes',
                         'rm-left-sidebar__graph-overview',
                         'rm-left-sidebar__all-pages',
                         'rm-left-sidebar__roam-depot',
-                        'starred-pages-wrapper .title']
+                        'starred_title']
 
 function hideButton(buttonClass){
   let btn = document.querySelector(".roam-sidebar-content ." + buttonClass);
@@ -17,10 +17,6 @@ function showButton(buttonClass){
   btn.style.display = null;
 }
 
-
-
-
-
 async function onload({extensionAPI}) {
   // set default setting
   if (window.roamAlphaAPI.platform.isMobileApp||window.roamAlphaAPI.platform.isMobile||window.roamAlphaAPI.platform.isTouchDevice||window.roamAlphaAPI.platform.isIOS){
@@ -29,23 +25,32 @@ async function onload({extensionAPI}) {
     mobile = false
   }
 
-  for (let i = 0; i < sidebarBtnClasses.length; i++) {
+  sidebarBtnClasses.forEach(async sidebarBtnClass => {
+    // there needs to be a difference between the class to hide and the settings ID
+    // now that I query for a more complex html item
+    let classToHide;
+    if (sidebarBtnClass=="starred_title") {
+      classToHide=="starred-pages-wrapper .title"
+    } else {
+      classToHide = sidebarBtnClass;
+    }
 
-    if (!extensionAPI.settings.get(sidebarBtnClasses[i])) {
-      await extensionAPI.settings.set(sidebarBtnClasses[i], false);
-    } else if (extensionAPI.settings.get(sidebarBtnClasses[i])==true){
+    if (!extensionAPI.settings.get(sidebarBtnClass)) {
+      await extensionAPI.settings.set(sidebarBtnClass, false);
+    } else if (extensionAPI.settings.get(sidebarBtnClass) == true) {
       // when starting up check if we should only hide on mobile
-      if (extensionAPI.settings.get("mobile")==true) {
+      if (extensionAPI.settings.get("mobile") == true) {
         // hide on mobile is true
-        if(mobile==true){
-          hideButton(sidebarBtnClasses[i])
+        if (mobile == true) {
+          hideButton(classToHide);
         }
-      } else{
+      } else {
         // hide on mobile is false
-        hideButton(sidebarBtnClasses[i])
+        hideButton(classToHide);
       }
     }
-  }
+  });
+  
   function toggleButton(checked, btnClass){
     // check is on
       // only mobile
@@ -80,25 +85,50 @@ async function onload({extensionAPI}) {
                   if (evt.target.checked) {
                     console.log("hide only on mobile")
                     if (mobile) {
-                      sidebarBtnClasses.forEach(function(button) {
-                        // check the api for if we want to hide the button
-                        if (extensionAPI.settings.get(button)) {
-                          hideButton(button)
+                      sidebarBtnClasses.forEach( sidebarBtnClass => {
+                        // there needs to be a difference between the class to hide and the settings ID
+                        // now that I query for a more complex html item
+                        let classToHide;
+                        if (sidebarBtnClass=="starred_title") {
+                          classToHide=="starred-pages-wrapper .title"
+                        } else {
+                          classToHide = sidebarBtnClass;
+                        }
+                        if (extensionAPI.settings.get(sidebarBtnClass)) {
+                          hideButton(classToHide)
                         }
                       })
+
                     } else {
                       // we want to only hide on mobile but it's not mobile
                       // so we show all buttons
-                      sidebarBtnClasses.forEach(function(button) {
-                        showButton(button)
+                      sidebarBtnClasses.forEach( sidebarBtnClass => {
+                        // there needs to be a difference between the class to hide and the settings ID
+                        // now that I query for a more complex html item
+                        let classToHide;
+                        if (sidebarBtnClass=="starred_title") {
+                          classToHide=="starred-pages-wrapper .title"
+                        } else {
+                          classToHide = sidebarBtnClass;
+                        }
+                        showButton(classToHide)
                       })
+  
                     }
                   } else {
                     console.log("hide everywhere")
-                    sidebarBtnClasses.forEach(function(button) {
-                      // check the api for if we want to hide the button
-                      if (extensionAPI.settings.get(button)) {
-                        hideButton(button)
+                    // check the api for if we want to hide the button
+                    sidebarBtnClasses.forEach( sidebarBtnClass => {
+                      // there needs to be a difference between the class to hide and the settings ID
+                      // now that I query for a more complex html item
+                      let classToHide;
+                      if (sidebarBtnClass=="starred_title") {
+                        classToHide=="starred-pages-wrapper .title"
+                      } else {
+                        classToHide = sidebarBtnClass;
+                      }
+                      if (extensionAPI.settings.get(sidebarBtnClass)) {
+                        hideButton(classToHide)
                       }
                     })
                   }
@@ -151,11 +181,21 @@ async function onload({extensionAPI}) {
 }
 
 function onunload() {
-  console.log("unload hide left sidebar button plugin")
   // reshow buttons
-  for (let i = 0; i < sidebarBtnClasses.length; i++) {
-    showButton(sidebarBtnClasses[i]);
-  }
+  sidebarBtnClasses.forEach( sidebarBtnClass => {
+    let classToHide;
+    if (sidebarBtnClass=="starred_title") {
+      classToHide=="starred-pages-wrapper .title"
+    } else {
+      classToHide = sidebarBtnClass;
+    }
+    
+    if (extensionAPI.settings.get(sidebarBtnClass)) {
+      showButton(classToHide)
+    }
+  })
+
+  console.log("unload hide left sidebar button plugin")
 }
 
 export default {
