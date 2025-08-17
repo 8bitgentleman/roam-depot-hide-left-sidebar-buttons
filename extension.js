@@ -1,5 +1,5 @@
 /* Original code by matt vogel */
-  /* v1  */
+/* v2 */
 let mobile = false;
 let sidebarBtnClasses = ['rm-left-sidebar__daily-notes',
                         'rm-left-sidebar__graph-overview',
@@ -9,20 +9,29 @@ let sidebarBtnClasses = ['rm-left-sidebar__daily-notes',
 
 function hideButton(buttonClass){
   let btn = document.querySelector(".roam-sidebar-content ." + buttonClass);
-  btn.style.display = "none";
+  if (btn) btn.style.display = "none";
 }
 
 function showButton(buttonClass){
   let btn = document.querySelector(".roam-sidebar-content ." + buttonClass);
-  btn.style.display = null;
+  if (btn) btn.style.display = null;
 }
 
+let extensionAPIGlobal; // Store reference for use in other functions
+
 async function onload({extensionAPI}) {
+  extensionAPIGlobal = extensionAPI; // Store the reference
+  
   // set default setting
   if (window.roamAlphaAPI.platform.isMobileApp||window.roamAlphaAPI.platform.isMobile||window.roamAlphaAPI.platform.isTouchDevice||window.roamAlphaAPI.platform.isIOS){
     mobile = true;
   }else{
     mobile = false
+  }
+
+  // Initialize mobile setting if not exists
+  if (extensionAPI.settings.get("mobile") === undefined) {
+    await extensionAPI.settings.set("mobile", false);
   }
 
   sidebarBtnClasses.forEach(async sidebarBtnClass => {
@@ -35,7 +44,7 @@ async function onload({extensionAPI}) {
       classToHide = sidebarBtnClass;
     }
 
-    if (!extensionAPI.settings.get(sidebarBtnClass)) {
+    if (extensionAPI.settings.get(sidebarBtnClass) === undefined) {
       await extensionAPI.settings.set(sidebarBtnClass, false);
     } else if (extensionAPI.settings.get(sidebarBtnClass) == true) {
       // when starting up check if we should only hide on mobile
@@ -51,22 +60,19 @@ async function onload({extensionAPI}) {
     }
   });
   
-  function toggleButton(checked, btnClass){
-    // check is on
-      // only mobile
-        // device is mobile
-          // hide
-      // wherever
-        // hide 
+  async function toggleButton(checked, btnClass, settingId){
+    // Save the setting first
+    await extensionAPIGlobal.settings.set(settingId, checked);
+    
+    // Then update UI
     if (checked==true){
-      if (extensionAPI.settings.get('mobile')==true) {
+      if (extensionAPIGlobal.settings.get('mobile')==true) {
         if (mobile) {
           hideButton(btnClass)
         }
       } else{
         hideButton(btnClass)
       }
-      
     } else if (checked==false){
       showButton(btnClass)
     } 
@@ -81,13 +87,14 @@ async function onload({extensionAPI}) {
             description: "Turn on to only hide items on Mobile, leave off for all platforms",
             action: {
                 type: "switch",
-                onChange: (evt) => { 
+                onChange: async (evt) => { 
+                  // Save the mobile setting
+                  await extensionAPI.settings.set("mobile", evt.target.checked);
+                  
                   if (evt.target.checked) {
                     console.log("hide only on mobile")
                     if (mobile) {
                       sidebarBtnClasses.forEach( sidebarBtnClass => {
-                        // there needs to be a difference between the class to hide and the settings ID
-                        // now that I query for a more complex html item
                         let classToHide;
                         if (sidebarBtnClass=="starred_title") {
                           classToHide = "starred-pages-wrapper .title"
@@ -98,13 +105,10 @@ async function onload({extensionAPI}) {
                           hideButton(classToHide)
                         }
                       })
-
                     } else {
                       // we want to only hide on mobile but it's not mobile
                       // so we show all buttons
                       sidebarBtnClasses.forEach( sidebarBtnClass => {
-                        // there needs to be a difference between the class to hide and the settings ID
-                        // now that I query for a more complex html item
                         let classToHide;
                         if (sidebarBtnClass=="starred_title") {
                           classToHide = "starred-pages-wrapper .title"
@@ -113,14 +117,11 @@ async function onload({extensionAPI}) {
                         }
                         showButton(classToHide)
                       })
-  
                     }
                   } else {
                     console.log("hide everywhere")
                     // check the api for if we want to hide the button
                     sidebarBtnClasses.forEach( sidebarBtnClass => {
-                      // there needs to be a difference between the class to hide and the settings ID
-                      // now that I query for a more complex html item
                       let classToHide;
                       if (sidebarBtnClass=="starred_title") {
                         classToHide = "starred-pages-wrapper .title"
@@ -132,47 +133,44 @@ async function onload({extensionAPI}) {
                       }
                     })
                   }
-                  
                 }
             },
         },
         {id:         "rm-left-sidebar__daily-notes",
         name:        "Hide Daily Notes Button",
-        description: "Hides or shows the Graph Overview button in the left sidebar",
+        description: "Hides or shows the Daily Notes button in the left sidebar",
         action:      {type:     "switch",
-                      onChange: (evt) => { 
-                        // check if we are hiding on mobile and if it's mobile
-                        toggleButton(evt.target.checked, 'rm-left-sidebar__daily-notes')
+                      onChange: async (evt) => { 
+                        await toggleButton(evt.target.checked, 'rm-left-sidebar__daily-notes', 'rm-left-sidebar__daily-notes')
                     }}},
         {id:          "rm-left-sidebar__graph-overview",
          name:        "Hide Graph Button",
          description: "Hides or shows the Graph Overview button in the left sidebar",
          action:      {type:     "switch",
-                       onChange: (evt) => { 
-                        toggleButton(evt.target.checked, 'rm-left-sidebar__graph-overview')
+                       onChange: async (evt) => { 
+                        await toggleButton(evt.target.checked, 'rm-left-sidebar__graph-overview', 'rm-left-sidebar__graph-overview')
                       }}},
         {id:          "rm-left-sidebar__all-pages",
         name:        "Hide All Pages Button",
-        description: "Hides or shows the Roam Depot button in the left sidebar",
+        description: "Hides or shows the All Pages button in the left sidebar",
         action:      {type:     "switch",
-                      onChange: (evt) => { 
-                        toggleButton(evt.target.checked, 'rm-left-sidebar__all-pages')
+                      onChange: async (evt) => { 
+                        await toggleButton(evt.target.checked, 'rm-left-sidebar__all-pages', 'rm-left-sidebar__all-pages')
                       }}},
         {id:          "rm-left-sidebar__roam-depot",
         name:        "Hide Roam Depot Button",
         description: "Hides or shows the Roam Depot button in the left sidebar",
         action:      {type:     "switch",
-                      onChange: (evt) => { 
-                        toggleButton(evt.target.checked, 'rm-left-sidebar__roam-depot')
+                      onChange: async (evt) => { 
+                        await toggleButton(evt.target.checked, 'rm-left-sidebar__roam-depot', 'rm-left-sidebar__roam-depot')
                       }}},
-        {id:          "rm-left-sidebar__roam-depot",
+        {id:          "starred_title", // ✅ Fixed: Use correct ID
         name:        "Hide Shortcuts Title Header",
         description: "Hides or shows the Shortcuts title header in the left sidebar",
         action:      {type:     "switch",
-                      onChange: (evt) => { 
-                        toggleButton(evt.target.checked, 'starred-pages-wrapper .title')
+                      onChange: async (evt) => { 
+                        await toggleButton(evt.target.checked, 'starred-pages-wrapper .title', 'starred_title')
                       }}}
-
     ]
   };
 
